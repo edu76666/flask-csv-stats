@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import pandas as pd
 import io
 
@@ -6,19 +6,25 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return {"status": "ok"}
+    return jsonify({"status": "ok"})
 
 @app.route("/stats", methods=["POST"])
 def stats():
     file = request.files.get("file")
     if not file:
-        return {"error": "Nenhum arquivo enviado"}, 400
+        return jsonify({"error": "Nenhum arquivo enviado"}), 400
 
-    df = pd.read_csv(io.StringIO(file.stream.read().decode("utf-8")))
-    
+    try:
+        df = pd.read_csv(io.StringIO(file.stream.read().decode("utf-8")))
+    except Exception:
+        return jsonify({"error": "Arquivo inválido ou corrompido"}), 400
+
+    if df.empty:
+        return jsonify({"error": "O arquivo não contém dados"}), 400
+
     numericas = df.select_dtypes(include="number")
     if numericas.empty:
-        return {"error": "Nenhuma coluna numérica encontrada"}, 400
+        return jsonify({"error": "Nenhuma coluna numérica encontrada"}), 400
 
     resultado = {}
     for coluna in numericas.columns:
@@ -30,7 +36,7 @@ def stats():
             "maximo": round(numericas[coluna].max(), 2)
         }
 
-    return resultado
+    return jsonify(resultado)
 
 if __name__ == "__main__":
     app.run(debug=True)
