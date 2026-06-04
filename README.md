@@ -1,27 +1,36 @@
-# Flask CSV Stats
-
-API REST que recebe o upload de um arquivo CSV e retorna
-estatísticas descritivas das colunas numéricas em JSON.
-
-## Como executar
-
-git clone https://github.com/edu76666/flask-csv-stats
-cd flask-csv-stats
-pip install -r requirements.txt
-python main.py
-
 ## Endpoints
 
-POST /stats
-- Recebe: arquivo CSV via form-data (campo "file")
-- Retorna: JSON com média, mediana, desvio padrão, mínimo e máximo
+### POST /stats
 
-## Tecnologias
+Recebe um arquivo CSV via form-data e retorna estatísticas descritivas das colunas numéricas.
 
-- Python 3.14
-- Flask
-- Pandas
+**Request**
+- Campo: `file` (form-data)
+- Formato: `.csv`
 
-## Autor
+**Exemplo com curl**
+```bash
+curl -X POST http://localhost:5000/stats \
+  -F "file=@dados.csv"
+```
 
-Eduardo Cruz Junior — LinkedIn · GitHub
+**Resposta de sucesso (200)**
+```json
+{
+  "idade": {
+    "media": 28.5,
+    "mediana": 27.0,
+    "desvio_padrao": 4.2,
+    "minimo": 22.0,
+    "maximo": 35.0
+  }
+}
+```
+
+**Erros possíveis**
+| Status | Mensagem |
+|--------|----------|
+| 400 | Nenhum arquivo enviado |
+| 400 | Arquivo inválido ou corrompido |
+| 400 | O arquivo não contém dados |
+| 400 | Nenhuma coluna numérica encontrada |
