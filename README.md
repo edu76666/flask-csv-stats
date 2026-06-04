@@ -2,7 +2,14 @@
 
 ### POST /stats
 
-Recebe um arquivo CSV via form-data e retorna estatísticas descritivas das colunas numéricas.
+=======
+## Testes
+
+```bash
+pytest tests/
+```
+
+## Tecnologias
 
 **Request**
 - Campo: `file` (form-data)
